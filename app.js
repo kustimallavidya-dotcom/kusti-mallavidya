@@ -10,9 +10,32 @@ if ('serviceWorker' in navigator) {
 }
 
 // === 2. Native App & Anti-Copy Enforcements ===
-document.addEventListener('contextmenu', event => event.preventDefault()); // Block right-click
-document.addEventListener('selectstart', event => event.preventDefault()); // Prevent long-press text selection
-document.addEventListener('dragstart', event => event.preventDefault()); // Prevent dragging of elements
+// Block right-click context menu entirely
+document.addEventListener('contextmenu', event => {
+    event.preventDefault();
+    return false;
+});
+
+// Prevent long-press text selection / highlighting in touch devices
+document.addEventListener('selectstart', event => {
+    event.preventDefault();
+    return false;
+});
+
+// Prevent dragging of any elements (like images or links)
+document.addEventListener('dragstart', event => {
+    event.preventDefault();
+    return false;
+});
+
+// Optional: Block F12, Ctrl+Shift+I, etc. to hinder casual devs inspecting elements
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'F12' ||
+        (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'i' || event.key === 'C' || event.key === 'c' || event.key === 'J' || event.key === 'j')) ||
+        (event.ctrlKey && (event.key === 'U' || event.key === 'u'))) {
+        event.preventDefault();
+    }
+});
 
 // === 3. Obfuscation & Security Utility ===
 // A basic inline obfuscation dictionary to hide API parameters and endpoints

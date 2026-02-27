@@ -8,9 +8,18 @@
 /* Disable selection globally */
 body {
     -webkit-user-select: none;
+    /* Safari */
     -moz-user-select: none;
+    /* Firefox */
     -ms-user-select: none;
+    /* IE10+/Edge */
     user-select: none;
+    /* Standard */
+
+    /* Disable long-press menus on iOS and Android */
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+
     touch-action: pan-y;
     /* Prevent pinch zoom but allow vertical scroll */
 }
