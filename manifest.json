@@ -1,0 +1,37 @@
+{
+    "name": "Kusti Mallavidya Live",
+    "short_name": "Kusti",
+    "description": "Live Indian Wrestling Matches and Pehlwani updates.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#fef3c7",
+    "theme_color": "#ea580c",
+    "orientation": "portrait",
+    "dir": "ltr",
+    "lang": "en-IN",
+    "icons": [
+        {
+            "src": "./icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "./icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "sports",
+        "entertainment"
+    ],
+    "shortcuts": [
+        {
+            "name": "Live Match",
+            "url": "./index.html?shortcut=live",
+            "description": "Watch current live Dangal"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+/* Custom App Styles */
+
+/* Disable tap highlight color for a native feel */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Disable selection globally */
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: pan-y;
+    /* Prevent pinch zoom but allow vertical scroll */
+}
+
+/* Safe Area Insets for Modern Phones (Notches & Bottom Bars) */
+.safe-area-pt {
+    padding-top: env(safe-area-inset-top, 0);
+}
+
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbars for absolute native feel */
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+}
+
+/* Subtle visual animations */
+.transition-colors {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}

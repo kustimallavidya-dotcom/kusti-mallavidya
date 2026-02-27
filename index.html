@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Prevents scaling and ensures a native app feel -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ea580c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Watch Live Indian Wrestling - Kusti Mallavidya">
+
+    <title>Kusti Mallavidya</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kusti: {
+                            red: '#b91c1c',      /* Traditional Earthy Red */
+                            orange: '#ea580c',   /* Bright Orange accent */
+                            brown: '#451a03',    /* Dark Earth / Text */
+                            sand: '#fef3c7',     /* Background */
+                            white: '#ffffff',
+                        }
+                    },
+                    boxShadow: {
+                        'top': '0 -2px 10px rgba(0, 0, 0, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Material Icons for Native Feel UI components -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+
+<body
+    class="bg-kusti-sand text-kusti-brown h-full w-full overflow-hidden flex flex-col font-sans select-none antialiased">
+    <!-- Offline Fallback Screen -->
+    <div id="offline-screen"
+        class="hidden absolute inset-0 bg-kusti-sand z-50 flex flex-col items-center justify-center text-center px-4">
+        <span class="material-icons text-6xl text-kusti-red mb-4">wifi_off</span>
+        <h2 class="text-2xl font-bold mb-2">No Connection</h2>
+        <p class="text-kusti-brown text-opacity-80">It looks like you're offline. Please check your internet connection
+            to watch live matches.</p>
+        <button id="retry-btn"
+            class="mt-6 bg-kusti-orange text-white px-6 py-2 rounded-full font-bold shadow-md active:bg-kusti-red transition-colors">Retry</button>
+    </div>
+
+    <!-- Top App Bar -->
+    <header
+        class="bg-kusti-orange text-white h-14 flex items-center justify-between px-4 shadow-md z-10 shrink-0 select-none">
+        <div class="flex items-center gap-2">
+            <!-- Basic App Icon Placeholder -->
+            <div
+                class="w-8 h-8 bg-kusti-sand rounded-full flex items-center justify-center text-kusti-orange font-bold text-sm shadow-inner">
+                KM</div>
+            <h1 class="text-lg font-bold tracking-wide">Kusti Mallavidya</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="material-icons cursor-pointer active:opacity-70 transition-opacity">notifications</span>
+            <span class="material-icons cursor-pointer active:opacity-70 transition-opacity">search</span>
+        </div>
+    </header>
+
+    <!-- Main Scrollable Content Area -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth bg-kusti-sand pb-16">
+
+        <!-- Feature Area: Live Video Player Container -->
+        <section class="bg-black w-full relative aspect-video shadow-lg" id="video-wrapper">
+            <!-- Appears as a placeholder before fetch -->
+            <div id="video-skeleton"
+                class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 text-white z-10">
+                <div class="w-10 h-10 border-4 border-kusti-orange border-t-transparent rounded-full animate-spin mb-3">
+                </div>
+                <p class="text-sm">Loading Live Match...</p>
+            </div>
+
+            <!-- Video Iframe container -->
+            <div id="player-container"
+                class="absolute inset-0 w-full h-full pointer-events-none sm:pointer-events-auto">
+                <!-- YouTube IFrame will be injected here via app.js -->
+            </div>
+
+            <!-- Overlay for anti-interaction and blur effect -->
+            <div id="video-overlay"
+                class="absolute inset-0 w-full h-full hidden bg-black/60 backdrop-blur-md z-20 flex flex-col items-center justify-center text-white transition-opacity duration-300">
+                <span class="material-icons text-5xl mb-2 text-kusti-red">visibility_off</span>
+                <p class="font-bold text-center px-4">Recording or background play is disabled.</p>
+            </div>
+        </section>
+
+        <!-- Native Ad Slot Below Video -->
+        <section
+            class="w-full bg-white border-b border-kusti-brown/10 p-2 flex justify-center items-center min-h-[100px]">
+            <!-- Google AdSense Placeholder - Native Ad -->
+            <div class="text-xs text-kusti-brown/50 text-center w-full">
+                <!-- Paste Google AdSense Script Here for Native banner (e.g. 300x250 or responsive) -->
+                <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-xxx" data-ad-slot="yyy" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+                <script>
+                    /* (adsbygoogle = window.adsbygoogle || []).push({}); */
+                </script>
+                <span>Advertisement</span>
+            </div>
+        </section>
+
+        <!-- Dynamic Match Info -->
+        <section class="p-4 bg-white shadow-sm mb-2">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <span
+                        class="inline-block px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded uppercase mb-1 tracking-wider animate-pulse">Live</span>
+                    <h2 class="text-xl font-bold text-kusti-brown leading-tight">Maha Dangal: Kesari Title Match</h2>
+                </div>
+            </div>
+            <p class="text-sm text-kusti-brown/80 mb-3">Kolhapur vs. Pune Talim • Final Round</p>
+            <div class="flex items-center gap-4 text-sm text-kusti-brown/60">
+                <div class="flex items-center gap-1"><span class="material-icons text-sm">visibility</span> 12.4K
+                    Watching</div>
+                <div class="flex items-center gap-1"><span class="material-icons text-sm">thumb_up</span> 4.2K Likes
+                </div>
+            </div>
+        </section>
+
+        <!-- Up Next / Related Matches -->
+        <section class="p-4">
+            <h3 class="font-bold text-lg mb-4 text-kusti-brown border-l-4 border-kusti-orange pl-2">Upcoming Matches
+            </h3>
+
+            <div class="flex flex-col gap-3">
+                <!-- Match Card 1 -->
+                <div class="flex gap-3 bg-white p-2 border border-black/5 rounded-lg active:bg-gray-50 cursor-pointer">
+                    <div class="w-24 h-16 bg-kusti-brown/20 rounded-md relative overflow-hidden flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1544078755-90177df83c44?w=400&q=80" alt="Wrestling"
+                            class="object-cover w-full h-full opacity-80 mix-blend-multiply">
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <h4 class="font-bold text-sm text-kusti-brown line-clamp-1">Semi-Finals: Group A</h4>
+                        <p class="text-xs text-kusti-brown/70 mt-1">Tomorrow • 10:00 AM</p>
+                    </div>
+                </div>
+
+                <!-- Match Card 2 -->
+                <div class="flex gap-3 bg-white p-2 border border-black/5 rounded-lg active:bg-gray-50 cursor-pointer">
+                    <div class="w-24 h-16 bg-kusti-brown/20 rounded-md relative overflow-hidden flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1509358117769-e0f3ee8246bc?w=400&q=80"
+                            alt="Training" class="object-cover w-full h-full opacity-80 mix-blend-multiply">
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <h4 class="font-bold text-sm text-kusti-brown line-clamp-1">Morning Pehlwani Practice</h4>
+                        <p class="text-xs text-kusti-brown/70 mt-1">Sunday • 06:00 AM</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buffer for infinite scroll / spacing above bottom nav -->
+        <div class="h-10"></div>
+    </main>
+
+    <!-- Google AdSense Bottom Sticky Banner Placeholder -->
+    <div class="w-full bg-white border-t border-kusti-brown/10 z-20 flex justify-center items-center h-[50px] shrink-0">
+        <div class="text-[10px] text-gray-400">
+            <!-- Paste AdSense Banner Code Here -->
+            Bottom Adverts
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Navigation Bar -->
+    <nav
+        class="bg-white h-[65px] border-t border-black/5 shadow-top flex justify-around items-center z-30 shrink-0 pb-safe">
+        <div
+            class="flex flex-col items-center justify-center w-16 h-full text-kusti-orange active:scale-90 transition-transform cursor-pointer">
+            <span class="material-icons mb-0.5">home</span>
+            <span class="text-[10px] font-medium">Home</span>
+        </div>
+        <div
+            class="flex flex-col items-center justify-center w-16 h-full text-kusti-brown/50 active:scale-90 transition-transform cursor-pointer">
+            <span class="material-icons-outlined mb-0.5">sports_martial_arts</span>
+            <span class="text-[10px] font-medium">Matches</span>
+        </div>
+        <div
+            class="flex flex-col items-center justify-center w-16 h-full text-kusti-brown/50 active:scale-90 transition-transform cursor-pointer">
+            <span class="material-icons-outlined mb-0.5">info</span>
+            <span class="text-[10px] font-medium">About</span>
+        </div>
+    </nav>
+
+    <!-- Main Logic Script -->
+    <!-- Contains the obfuscator/anti-copy requirements via standard techniques -->
+    <script src="app.js"></script>
+
+    <!-- YouTube IFrame API Script Injection via app.js -->
+</body>
+
+</html>
