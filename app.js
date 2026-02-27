@@ -85,115 +85,150 @@ async function fetchLiveMatchData() {
 
         const data = await response.json();
 
-        if (data && data.success && data.vid) {
-            // Assume the backend returns a base64 encoded video ID for additional safety
-            // e.g., Base64("dQw4w9WgXcQ") => "ZFF3NHc5V2dYY1E="
-            const rawVid = atob(data.vid);
-            initializePlayer(rawVid);
-        } else {
-            showErrorState("Currently no matches are live.");
+        if (data && data.success) {
+            updateMatchUI(data);
+
+            if (data.status === "LIVE" && data.vid) {
+                // Live match logic
+                const rawVid = atob(data.vid);
+                initializePlayer({ videoId: rawVid });
+            } else if (data.fallback_playlist) {
+                // Fallback Playlist logic
+                const rawPlaylist = atob(data.fallback_playlist);
+                initializePlayer({ list: rawPlaylist, listType: 'playlist' });
+            } else {
+                showErrorState("Currently no matches are live.");
+            }
+        } catch (error) {
+            console.error("Match Fetch Failed:", error);
+            showOfflineState();
         }
-    } catch (error) {
-        console.error("Match Fetch Failed:", error);
-        showOfflineState();
     }
-}
 
-function initializePlayer(videoId) {
-    // Hide skeleton loading
-    const skeleton = document.getElementById('video-skeleton');
-    if (skeleton) skeleton.style.display = 'none';
+function updateMatchUI(data) {
+        const badge = document.getElementById('match-badge');
+        const title = document.getElementById('match-title');
+        const desc = document.getElementById('match-desc');
 
-    // Construct Player using obfuscated parameters
-    player = new YT.Player('player-container', {
-        height: '100%',
-        width: '100%',
-        videoId: videoId,
-        playerVars: _0xO._cfg(),
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
+        if (badge && title && desc) {
+            title.innerText = data.match_title || "Kusti Mallavidya";
+            desc.innerText = data.location || "Featured Matches";
+
+            if (data.status === "LIVE") {
+                badge.innerText = "Live";
+                badge.className = "inline-block px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded uppercase mb-1 tracking-wider animate-pulse";
+            } else {
+                badge.innerText = "Featured Playlist";
+                badge.className = "inline-block px-2 py-0.5 bg-kusti-orange text-white text-xs font-bold rounded uppercase mb-1 tracking-wider";
+            }
+        }
+    }
+
+    function initializePlayer(playerOptions) {
+        // Hide skeleton loading
+        const skeleton = document.getElementById('video-skeleton');
+        if (skeleton) skeleton.style.display = 'none';
+
+        let config = {
+            height: '100%',
+            width: '100%',
+            playerVars: _0xO._cfg(),
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        };
+
+        if (playerOptions.videoId) {
+            config.videoId = playerOptions.videoId;
+        } else if (playerOptions.list) {
+            config.playerVars.listType = 'playlist';
+            config.playerVars.list = playerOptions.list;
+        }
+
+        // Construct Player using obfuscated parameters
+        player = new YT.Player('player-container', config);
+    }
+
+    function onPlayerReady(event) {
+        // Try to auto-play if the device allows it
+        event.target.playVideo();
+    }
+
+    function onPlayerStateChange(event) {
+        // Handle player states (e.g. Ended, Paused, Buffering) if needed in future
+    }
+
+    // === 5. Advanced Anti-Recording Measures ===
+    // Pause and blur video when the browser window/app loses focus
+    window.addEventListener('blur', () => {
+        isTabActive = false;
+        document.getElementById('video-overlay').classList.remove('hidden');
+        if (player && typeof player.pauseVideo === 'function') {
+            player.pauseVideo();
         }
     });
-}
 
-function onPlayerReady(event) {
-    // Try to auto-play if the device allows it
-    event.target.playVideo();
-}
+    // Resume playback and remove blur when window is active again
+    window.addEventListener('focus', () => {
+        isTabActive = true;
+        document.getElementById('video-overlay').classList.add('hidden');
+        if (player && typeof player.playVideo === 'function') {
+            player.playVideo();
+        }
+    });
 
-function onPlayerStateChange(event) {
-    // Handle player states (e.g. Ended, Paused, Buffering) if needed in future
-}
+    // === 6. Offline Fallback Logic ===
+    function showOfflineState() {
+        const skeleton = document.getElementById('video-skeleton');
+        if (skeleton) skeleton.style.display = 'none';
 
-// === 5. Advanced Anti-Recording Measures ===
-// Pause and blur video when the browser window/app loses focus
-window.addEventListener('blur', () => {
-    isTabActive = false;
-    document.getElementById('video-overlay').classList.remove('hidden');
-    if (player && typeof player.pauseVideo === 'function') {
-        player.pauseVideo();
-    }
-});
-
-// Resume playback and remove blur when window is active again
-window.addEventListener('focus', () => {
-    isTabActive = true;
-    document.getElementById('video-overlay').classList.add('hidden');
-    if (player && typeof player.playVideo === 'function') {
-        player.playVideo();
-    }
-});
-
-// === 6. Offline Fallback Logic ===
-function showOfflineState() {
-    const skeleton = document.getElementById('video-skeleton');
-    if (skeleton) skeleton.style.display = 'none';
-
-    const offlineScreen = document.getElementById('offline-screen');
-    if (offlineScreen) {
-        offlineScreen.classList.remove('hidden');
-        offlineScreen.style.display = 'flex';
-    }
-}
-
-function showErrorState(msg) {
-    const skeleton = document.getElementById('video-skeleton');
-    if (skeleton) {
-        skeleton.innerHTML = `<p class="text-white text-sm font-bold text-center px-4">${msg}</p>`;
-    }
-}
-
-// Handle Retry click in offline screen
-const retryBtn = document.getElementById('retry-btn');
-if (retryBtn) {
-    retryBtn.addEventListener('click', () => {
         const offlineScreen = document.getElementById('offline-screen');
         if (offlineScreen) {
-            offlineScreen.classList.add('hidden');
-            offlineScreen.style.display = 'none';
+            offlineScreen.classList.remove('hidden');
+            offlineScreen.style.display = 'flex';
         }
+    }
 
+    function showErrorState(msg) {
         const skeleton = document.getElementById('video-skeleton');
         if (skeleton) {
-            skeleton.style.display = 'flex';
-            skeleton.innerHTML = `<div class="w-10 h-10 border-4 border-kusti-orange border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sm">Connecting...</p>`;
+            skeleton.innerHTML = `<p class="text-white text-sm font-bold text-center px-4">${msg}</p>`;
         }
-        fetchLiveMatchData();
-    });
-}
-
-// Auto-recover if connection is restored globally
-window.addEventListener('online', () => {
-    const offScreen = document.getElementById('offline-screen');
-    if (offScreen && offScreen.style.display === 'flex') {
-        offScreen.style.display = 'none';
-        offScreen.classList.add('hidden');
-        fetchLiveMatchData();
     }
-});
 
-window.addEventListener('offline', showOfflineState);
+    // Handle Retry click in offline screen
+    const retryBtn = document.getElementById('retry-btn');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            const offlineScreen = document.getElementById('offline-screen');
+            if (offlineScreen) {
+                offlineScreen.classList.add('hidden');
+                offlineScreen.style.display = 'none';
+            }
+
+            const skeleton = document.getElementById('video-skeleton');
+            if (skeleton) {
+                skeleton.style.display = 'flex';
+                skeleton.innerHTML = `<div class="w-10 h-10 border-4 border-kusti-orange border-t-transparent rounded-full animate-spin mb-3"></div><p class="text-sm">Connecting...</p>`;
+            }
+            fetchLiveMatchData();
+        });
+    }
+
+    // Auto-recover if connection is restored globally
+    window.addEventListener('online', () => {
+        const offScreen = document.getElementById('offline-screen');
+        if (offScreen && offScreen.style.display === 'flex') {
+            offScreen.style.display = 'none';
+            offScreen.classList.add('hidden');
+            fetchLiveMatchData();
+        }
+    });
+
+    window.addEventListener('offline', showOfflineState);
+
+}
 
 // Trigger setup sequence
 loadYouTubeAPI();
