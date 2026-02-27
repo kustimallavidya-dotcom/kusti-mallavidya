@@ -2,11 +2,11 @@
 
 const CACHE_NAME = 'kusti-mallavidya-v1';
 const ASSETS_TO_CACHE = [
-    './',
-    './index.html',
-    './styles.css',
-    './app.js',
-    './manifest.json',
+    '/',
+    '/index.html',
+    '/styles.css',
+    '/app.js',
+    '/manifest.json',
     'https://fonts.googleapis.com/icon?family=Material+Icons',
     'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined',
     'https://cdn.tailwindcss.com'
@@ -79,7 +79,7 @@ self.addEventListener('fetch', event => {
             }).catch(() => {
                 // If network fails and request is for a navigation (html page)
                 if (event.request.mode === 'navigate') {
-                    return caches.match('./index.html');
+                    return caches.match('/index.html');
                 }
             });
         })
