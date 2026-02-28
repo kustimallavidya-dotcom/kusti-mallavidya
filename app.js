@@ -78,8 +78,9 @@ window.onYouTubeIframeAPIReady = function () {
 
 async function fetchLiveMatchData() {
     try {
-        // Dynamic fetch of the live match metadata (using relative path)
-        const response = await fetch('./video.json');
+        // Dynamic fetch of the live match metadata (using relative path with cache-buster)
+        const cacheBuster = new Date().getTime();
+        const response = await fetch(`./video.json?t=${cacheBuster}`);
 
         if (!response.ok) throw new Error("Network error fetching match info");
 
@@ -102,7 +103,7 @@ async function fetchLiveMatchData() {
         }
     } catch (error) {
         console.error("Match Fetch Failed:", error);
-        showOfflineState();
+        showOfflineState(error.message);
     }
 }
 
@@ -180,7 +181,7 @@ window.addEventListener('focus', () => {
 });
 
 // === 6. Offline Fallback Logic ===
-function showOfflineState() {
+function showOfflineState(errMessage) {
     const skeleton = document.getElementById('video-skeleton');
     if (skeleton) skeleton.style.display = 'none';
 
@@ -188,6 +189,11 @@ function showOfflineState() {
     if (offlineScreen) {
         offlineScreen.classList.remove('hidden');
         offlineScreen.style.display = 'flex';
+
+        if (errMessage && typeof errMessage === 'string') {
+            const subtitle = offlineScreen.querySelector('p');
+            if (subtitle) subtitle.innerText = "Error: " + errMessage;
+        }
     }
 }
 

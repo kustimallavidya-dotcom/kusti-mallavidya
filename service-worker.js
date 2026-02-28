@@ -1,6 +1,6 @@
 // service-worker.js
 
-const CACHE_NAME = 'kusti-mallavidya-v4';
+const CACHE_NAME = 'kusti-mallavidya-v5';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
