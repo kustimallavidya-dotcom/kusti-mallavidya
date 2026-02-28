@@ -252,12 +252,12 @@ function triggerReaction(type) {
     // Randomize initial horizontal position slightly for scatter effect
     const offset = Math.random() * 30 - 15;
     el.style.left = `calc(50% + ${offset}px)`;
-    
+
     container.appendChild(el);
 
     // Remove element after animation ends
     setTimeout(() => {
-        if(el.parentNode) el.parentNode.removeChild(el);
+        if (el.parentNode) el.parentNode.removeChild(el);
     }, 2000);
 }
 
@@ -268,11 +268,11 @@ function votePoll(option) {
     polled = true;
 
     // Simulated percentages
-    let pctA = 65; 
+    let pctA = 65;
     let pctB = 35;
 
     // Small boost to whichever they voted for
-    if(option === 'A') { pctA += 3; pctB -= 3; }
+    if (option === 'A') { pctA += 3; pctB -= 3; }
     else { pctB += 3; pctA -= 3; }
 
     // Update UI Elements
@@ -282,15 +282,15 @@ function votePoll(option) {
     const textB = document.getElementById('poll-pct-b');
     const msg = document.getElementById('poll-message');
 
-    if(barA && barB) {
+    if (barA && barB) {
         barA.style.width = pctA + '%';
         barB.style.width = pctB + '%';
-        
+
         // Change colors to show winner/loser state
         barA.classList.remove('bg-kusti-orange/30');
         barB.classList.remove('bg-kusti-orange/30');
 
-        if(option === 'A') {
+        if (option === 'A') {
             barA.classList.add('bg-kusti-orange/40');
             barB.classList.add('bg-kusti-brown/10');
         } else {
@@ -299,14 +299,86 @@ function votePoll(option) {
         }
     }
 
-    if(textA && textB) {
+    if (textA && textB) {
         textA.innerText = pctA + '%';
         textB.innerText = pctB + '%';
         textA.classList.remove('hidden');
         textB.classList.remove('hidden');
     }
 
-    if(msg) {
+    if (msg) {
         msg.classList.remove('hidden');
+    }
+}
+
+// === 9. Bottom Navigation & Tab Switching ===
+function switchTab(tabId) {
+    // Hide all views
+    document.getElementById('view-home').classList.add('hidden');
+    document.getElementById('view-pehlwans').classList.add('hidden');
+    document.getElementById('view-matches').classList.add('hidden');
+
+    // Show active view
+    document.getElementById('view-' + tabId).classList.remove('hidden');
+
+    // Reset all tab styles
+    const tabs = ['home', 'pehlwans', 'matches'];
+    tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        el.classList.remove('text-kusti-orange');
+        el.classList.add('text-kusti-brown/50');
+    });
+
+    // Highlight active tab
+    const activeEl = document.getElementById('tab-' + tabId);
+    activeEl.classList.remove('text-kusti-brown/50');
+    activeEl.classList.add('text-kusti-orange');
+
+    // If switching to Pehlwans, fetch data if not loaded
+    if (tabId === 'pehlwans') {
+        loadPehlwans();
+    }
+}
+
+// === 10. Load Dynamic JSON Data ===
+let pehlwansLoaded = false;
+async function loadPehlwans() {
+    if (pehlwansLoaded) return;
+
+    try {
+        const res = await fetch('/pehlwans.json');
+        if (!res.ok) throw new Error("Could not load pehlwans");
+
+        const data = await res.json();
+        const container = document.getElementById('pehlwans-grid');
+        container.innerHTML = ''; // Clear loading text
+
+        data.forEach(p => {
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col border border-kusti-brown/5";
+            card.innerHTML = `
+                <div class="h-24 bg-gradient-to-r from-kusti-orange to-kusti-red relative">
+                    <img src="${p.image_url}" class="w-16 h-16 rounded-full border-4 border-white absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 object-cover bg-white">
+                </div>
+                <div class="h-8"></div>
+                <div class="p-3 text-center flex-1 flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-sm text-kusti-brown">${p.name}</h4>
+                        <p class="text-[9px] text-kusti-brown/60 font-bold uppercase tracking-wide mt-0.5">${p.talim}</p>
+                    </div>
+                    <div class="mt-3 grid grid-cols-2 gap-1 text-xs border-t border-kusti-brown/10 pt-2 pb-1">
+                        <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">${p.weight}</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Weight</span></div>
+                        <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">${p.height}</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Height</span></div>
+                    </div>
+                    <div class="w-full mt-1 bg-kusti-sand text-kusti-brown/80 rounded py-1 text-[10px] font-bold border border-kusti-brown/5">Fav Move: ${p.fav_move}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        pehlwansLoaded = true;
+    } catch (e) {
+        console.error("Error loading pehlwan profiles:", e);
+        document.getElementById('pehlwans-grid').innerHTML = '<div class="col-span-2 text-center text-sm text-red-500">Failed to load data. Check connection.</div>';
     }
 }

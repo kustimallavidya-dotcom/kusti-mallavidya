@@ -1,0 +1,42 @@
+[
+    {
+        "id": "1",
+        "name": "Sikandar Shaikh",
+        "talim": "Gangavesh Talim",
+        "weight": "105 kg",
+        "height": "6'1\"",
+        "fav_move": "Dhak",
+        "category": "Maha Kesari",
+        "image_url": "https://images.unsplash.com/photo-1544078755-90177df83c44?w=400&h=400&fit=crop"
+    },
+    {
+        "id": "2",
+        "name": "Mauli Jamdade",
+        "talim": "Hanuman Akhada",
+        "weight": "98 kg",
+        "height": "5'11\"",
+        "fav_move": "Ghissa",
+        "category": "Maha Kesari",
+        "image_url": "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop"
+    },
+    {
+        "id": "3",
+        "name": "Prithviraj Patil",
+        "talim": "Motibag Talim",
+        "weight": "92 kg",
+        "height": "6'0\"",
+        "fav_move": "Kalajang",
+        "category": "Maharashtra Kesari",
+        "image_url": "https://images.unsplash.com/photo-1548083833-2eb0f507ba3c?w=400&h=400&fit=crop"
+    },
+    {
+        "id": "4",
+        "name": "Bala Rafiq Shaikh",
+        "talim": "Hanuman Akhada",
+        "weight": "110 kg",
+        "height": "6'2\"",
+        "fav_move": "Mooli",
+        "category": "Hind Kesari",
+        "image_url": "https://images.unsplash.com/photo-1517865288-0f01ba321396?w=400&h=400&fit=crop"
+    }
+]
