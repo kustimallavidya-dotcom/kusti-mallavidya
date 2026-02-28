@@ -3,7 +3,7 @@
 // === 1. Service Worker Registration for PWA ===
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('./service-worker.js')
             .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
             .catch(err => console.error('ServiceWorker registration failed:', err));
     });
@@ -78,8 +78,8 @@ window.onYouTubeIframeAPIReady = function () {
 
 async function fetchLiveMatchData() {
     try {
-        // Dynamic fetch of the live match metadata
-        const response = await fetch('/video.json');
+        // Dynamic fetch of the live match metadata (using relative path)
+        const response = await fetch('./video.json');
 
         if (!response.ok) throw new Error("Network error fetching match info");
 
@@ -346,7 +346,7 @@ async function loadPehlwans() {
     if (pehlwansLoaded) return;
 
     try {
-        const res = await fetch('/pehlwans.json');
+        const res = await fetch('./pehlwans.json');
         if (!res.ok) throw new Error("Could not load pehlwans");
 
         const data = await res.json();
