@@ -231,3 +231,82 @@ window.addEventListener('offline', showOfflineState);
 
 // Trigger setup sequence
 loadYouTubeAPI();
+
+// === 7. Live Engagement Reactions ===
+function triggerReaction(type) {
+    const container = document.getElementById('reaction-floats');
+    if (!container) return;
+
+    const el = document.createElement('div');
+    el.className = 'reaction-anim text-3xl drop-shadow-md';
+
+    // Icons for reactions
+    if (type === 'shaddu') {
+        el.innerHTML = '💪';
+    } else if (type === 'shitti') {
+        el.innerHTML = '😗💨';
+    } else if (type === 'clap') {
+        el.innerHTML = '👏';
+    }
+
+    // Randomize initial horizontal position slightly for scatter effect
+    const offset = Math.random() * 30 - 15;
+    el.style.left = `calc(50% + ${offset}px)`;
+    
+    container.appendChild(el);
+
+    // Remove element after animation ends
+    setTimeout(() => {
+        if(el.parentNode) el.parentNode.removeChild(el);
+    }, 2000);
+}
+
+// === 8. Live Polls Logic ===
+let polled = false;
+function votePoll(option) {
+    if (polled) return;
+    polled = true;
+
+    // Simulated percentages
+    let pctA = 65; 
+    let pctB = 35;
+
+    // Small boost to whichever they voted for
+    if(option === 'A') { pctA += 3; pctB -= 3; }
+    else { pctB += 3; pctA -= 3; }
+
+    // Update UI Elements
+    const barA = document.getElementById('poll-bar-a');
+    const barB = document.getElementById('poll-bar-b');
+    const textA = document.getElementById('poll-pct-a');
+    const textB = document.getElementById('poll-pct-b');
+    const msg = document.getElementById('poll-message');
+
+    if(barA && barB) {
+        barA.style.width = pctA + '%';
+        barB.style.width = pctB + '%';
+        
+        // Change colors to show winner/loser state
+        barA.classList.remove('bg-kusti-orange/30');
+        barB.classList.remove('bg-kusti-orange/30');
+
+        if(option === 'A') {
+            barA.classList.add('bg-kusti-orange/40');
+            barB.classList.add('bg-kusti-brown/10');
+        } else {
+            barB.classList.add('bg-kusti-orange/40');
+            barA.classList.add('bg-kusti-brown/10');
+        }
+    }
+
+    if(textA && textB) {
+        textA.innerText = pctA + '%';
+        textB.innerText = pctB + '%';
+        textA.classList.remove('hidden');
+        textB.classList.remove('hidden');
+    }
+
+    if(msg) {
+        msg.classList.remove('hidden');
+    }
+}

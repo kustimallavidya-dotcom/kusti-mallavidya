@@ -44,3 +44,31 @@ body {
 .transition-colors {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Floating Reactions Animation */
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(0.8) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-200px) scale(1.5) rotate(-15deg);
+        opacity: 0;
+    }
+}
+
+.reaction-anim {
+    animation: floatUp 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    position: absolute;
+    bottom: 0;
+    pointer-events: none;
+}

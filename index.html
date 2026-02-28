@@ -91,6 +91,32 @@
                 <!-- YouTube IFrame will be injected here via app.js -->
             </div>
 
+            <!-- Iron-Clad Security Overlays -->
+            <!-- Top Overlay to block clicking title/logo -->
+            <div class="absolute top-0 left-0 w-full h-[50px] z-[15] pointer-events-auto bg-transparent"></div>
+            
+            <!-- Bottom Overlay to block youtube logo / extra controls if needed -->
+            <div class="absolute bottom-0 right-0 w-[120px] h-[40px] z-[15] pointer-events-auto bg-transparent"></div>
+
+            <!-- Reaction Buttons (Right Side) -->
+            <div class="absolute bottom-6 right-2 flex flex-col gap-3 z-30">
+                <!-- Shaddu (Bicep Slap) -->
+                <button onclick="triggerReaction('shaddu')" class="w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 active:scale-90 transition-transform shadow-lg group">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-white group-active:text-kusti-orange transition-colors"><path d="M12 4c-1.1 0-2 .9-2 2v6h-4c-1.1 0-2 .9-2 2v4c0 2.2 1.8 4 4 4h8c3.3 0 6-2.7 6-6V8c0-2.2-1.8-4-4-4h-6z"/><path d="M12 4v6"/><path d="M12 10h4"/></svg>
+                </button>
+                <!-- Shitti (Whistle) -->
+                <button onclick="triggerReaction('shitti')" class="w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 active:scale-90 transition-transform shadow-lg group">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-white group-active:text-kusti-orange transition-colors"><path d="M12 2C6.5 2 2 6.5 2 12c0 2.8 1.1 5.3 3 7.1V22h4l2.1-2.1c.9.2 1.9.3 2.9.3 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-.8 0-1.6-.1-2.4-.2l-2.6 2.6v-2.3C5.1 18.2 4 15.2 4 12 4 7.6 7.6 4 12 4s8 3.6 8 8-3.6 8-8 8zm4-9h-8v-2h8v2z"/></svg>
+                </button>
+                <!-- Clapping -->
+                <button onclick="triggerReaction('clap')" class="w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 active:scale-90 transition-transform shadow-lg group">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-white group-active:text-kusti-orange transition-colors"><path d="M18 13v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-6M4 9h16v4H4zM6 5h12v4H6z"/><path d="M10 5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2M8 17h8"/></svg>
+                </button>
+            </div>
+
+            <!-- Floating Reactions Container -->
+            <div id="reaction-floats" class="absolute bottom-16 right-4 w-12 h-48 pointer-events-none z-20 flex flex-col-reverse items-center"></div>
+
             <!-- Overlay for anti-interaction and blur effect -->
             <div id="video-overlay"
                 class="absolute inset-0 w-full h-full hidden bg-black/60 backdrop-blur-md z-20 flex flex-col items-center justify-center text-white transition-opacity duration-300">
@@ -132,33 +158,164 @@
             </div>
         </section>
 
-        <!-- Up Next / Related Matches -->
-        <section class="p-4">
-            <h3 class="font-bold text-lg mb-4 text-kusti-brown border-l-4 border-kusti-orange pl-2">Upcoming Matches
-            </h3>
+        <!-- Live Polls & Predictions -->
+        <section class="p-4 bg-white shadow-sm mb-2 border-t border-kusti-brown/5">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="material-icons text-kusti-red animate-pulse">poll</span>
+                <h3 class="font-bold text-kusti-brown">Live Poll</h3>
+            </div>
+            <p class="font-bold text-sm mb-3">Who will win the Maha Dangal today?</p>
+            <div class="flex flex-col gap-2 relative">
+                <button onclick="votePoll('A')" class="w-full relative bg-white border border-kusti-orange/30 rounded text-left px-3 py-2 font-semibold text-kusti-brown overflow-hidden active:bg-kusti-sand transition-colors z-0">
+                    <div id="poll-bar-a" class="absolute top-0 left-0 h-full bg-kusti-orange/30 w-0 transition-all duration-700 z-[-1]"></div>
+                    <span class="relative z-10 flex justify-between w-full"><span>Sikandar Shaikh</span> <span id="poll-pct-a" class="hidden font-bold"></span></span>
+                </button>
+                <button onclick="votePoll('B')" class="w-full relative bg-white border border-kusti-orange/30 rounded text-left px-3 py-2 font-semibold text-kusti-brown overflow-hidden active:bg-kusti-sand transition-colors z-0">
+                    <div id="poll-bar-b" class="absolute top-0 left-0 h-full bg-kusti-orange/30 w-0 transition-all duration-700 z-[-1]"></div>
+                    <span class="relative z-10 flex justify-between w-full"><span>Mauli Jamdade</span> <span id="poll-pct-b" class="hidden font-bold"></span></span>
+                </button>
+            </div>
+            <p id="poll-message" class="text-xs text-kusti-brown/60 text-center mt-2 hidden">Thanks for voting!</p>
+        </section>
 
-            <div class="flex flex-col gap-3">
-                <!-- Match Card 1 -->
-                <div class="flex gap-3 bg-white p-2 border border-black/5 rounded-lg active:bg-gray-50 cursor-pointer">
-                    <div class="w-24 h-16 bg-kusti-brown/20 rounded-md relative overflow-hidden flex-shrink-0">
-                        <img src="https://images.unsplash.com/photo-1544078755-90177df83c44?w=400&q=80" alt="Wrestling"
-                            class="object-cover w-full h-full opacity-80 mix-blend-multiply">
+        <!-- Native AdSense Placement -->
+        <section class="mx-4 mb-3 bg-white rounded border border-kusti-brown/10 overflow-hidden shadow-sm relative">
+            <div class="absolute top-0 right-0 bg-kusti-sand/80 text-[9px] px-1 text-kusti-brown/60 rounded-bl z-10">Sponsored</div>
+            <div class="flex items-center p-2">
+                <div class="w-16 h-16 bg-gray-100 rounded shrink-0 mr-3 flex items-center justify-center text-xs text-gray-400">Ad</div>
+                <div>
+                    <h4 class="font-bold text-sm text-kusti-brown">Buy Premium Desi Ghee</h4>
+                    <p class="text-xs text-kusti-brown/70 line-clamp-2 mt-0.5">Original quality A2 Cow Ghee, perfect for Pehlwans. Flat 20% off today.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Pehlwans (Stats Cards) -->
+        <section class="p-4 bg-white mb-2 shadow-sm">
+            <h3 class="font-bold text-lg mb-4 text-kusti-brown border-l-4 border-kusti-red pl-2">Top Pehlwans</h3>
+            <div class="flex gap-4 overflow-x-auto pb-4 snap-x hide-scrollbar">
+                <!-- Card 1 -->
+                <div class="min-w-[160px] bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.05)] overflow-hidden snap-center flex flex-col border border-kusti-brown/5">
+                    <div class="h-20 bg-gradient-to-r from-kusti-orange to-kusti-red relative">
+                        <img src="https://images.unsplash.com/photo-1544078755-90177df83c44?w=200&h=200&fit=crop" class="w-16 h-16 rounded-full border-4 border-white absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 object-cover bg-white">
                     </div>
-                    <div class="flex flex-col justify-center">
-                        <h4 class="font-bold text-sm text-kusti-brown line-clamp-1">Semi-Finals: Group A</h4>
-                        <p class="text-xs text-kusti-brown/70 mt-1">Tomorrow • 10:00 AM</p>
+                    <div class="h-8"></div>
+                    <div class="p-3 text-center flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-sm text-kusti-brown">Sikandar Shaikh</h4>
+                            <p class="text-[9px] text-kusti-brown/60 font-bold uppercase tracking-wide mt-0.5">Gangavesh Talim</p>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-1 text-xs border-t border-kusti-brown/10 pt-2 pb-1">
+                            <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">105 kg</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Weight</span></div>
+                            <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">6'1"</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Height</span></div>
+                        </div>
+                        <div class="w-full mt-1 bg-kusti-sand text-kusti-brown/80 rounded py-1 text-[10px] font-bold border border-kusti-brown/5">Fav Move: Dhak</div>
                     </div>
                 </div>
-
-                <!-- Match Card 2 -->
-                <div class="flex gap-3 bg-white p-2 border border-black/5 rounded-lg active:bg-gray-50 cursor-pointer">
-                    <div class="w-24 h-16 bg-kusti-brown/20 rounded-md relative overflow-hidden flex-shrink-0">
-                        <img src="https://images.unsplash.com/photo-1509358117769-e0f3ee8246bc?w=400&q=80"
-                            alt="Training" class="object-cover w-full h-full opacity-80 mix-blend-multiply">
+                <!-- Card 2 -->
+                <div class="min-w-[160px] bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.05)] overflow-hidden snap-center flex flex-col border border-kusti-brown/5">
+                    <div class="h-20 bg-gradient-to-r from-kusti-orange to-kusti-red relative">
+                        <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop" class="w-16 h-16 rounded-full border-4 border-white absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 object-cover bg-white">
                     </div>
-                    <div class="flex flex-col justify-center">
-                        <h4 class="font-bold text-sm text-kusti-brown line-clamp-1">Morning Pehlwani Practice</h4>
-                        <p class="text-xs text-kusti-brown/70 mt-1">Sunday • 06:00 AM</p>
+                    <div class="h-8"></div>
+                    <div class="p-3 text-center flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-sm text-kusti-brown">Mauli Jamdade</h4>
+                            <p class="text-[9px] text-kusti-brown/60 font-bold uppercase tracking-wide mt-0.5">Hanuman Akhada</p>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-1 text-xs border-t border-kusti-brown/10 pt-2 pb-1">
+                            <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">98 kg</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Weight</span></div>
+                            <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">5'11"</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Height</span></div>
+                        </div>
+                        <div class="w-full mt-1 bg-kusti-sand text-kusti-brown/80 rounded py-1 text-[10px] font-bold border border-kusti-brown/5">Fav Move: Ghissa</div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="min-w-[160px] bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.05)] overflow-hidden snap-center flex flex-col border border-kusti-brown/5">
+                    <div class="h-20 bg-gradient-to-r from-kusti-orange to-kusti-red relative">
+                        <img src="https://images.unsplash.com/photo-1548083833-2eb0f507ba3c?w=200&h=200&fit=crop" class="w-16 h-16 rounded-full border-4 border-white absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 object-cover bg-white">
+                    </div>
+                    <div class="h-8"></div>
+                    <div class="p-3 text-center flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-sm text-kusti-brown">Prithviraj Patil</h4>
+                            <p class="text-[9px] text-kusti-brown/60 font-bold uppercase tracking-wide mt-0.5">Motibag Talim</p>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-1 text-xs border-t border-kusti-brown/10 pt-2 pb-1">
+                            <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">92 kg</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Weight</span></div>
+                            <div class="flex flex-col"><span class="font-bold text-kusti-orange text-sm">6'0"</span><span class="text-[9px] font-medium text-kusti-brown/50 uppercase">Height</span></div>
+                        </div>
+                        <div class="w-full mt-1 bg-kusti-sand text-kusti-brown/80 rounded py-1 text-[10px] font-bold border border-kusti-brown/5">Fav Move: Kalajang</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video On Demand (VOD) Categories -->
+        <section class="pt-4 bg-white shadow-sm mb-4 border-t border-kusti-brown/5">
+            <!-- Upcoming Live Matches -->
+            <div class="mb-5 pl-4">
+                <h3 class="font-bold text-sm mb-3 text-kusti-brown border-l-4 border-kusti-orange pl-2">Upcoming Live Matches</h3>
+                <div class="flex gap-3 overflow-x-auto pr-4 pb-2 snap-x hide-scrollbar">
+                    <div class="min-w-[140px] snap-start relative h-24 rounded-lg overflow-hidden bg-black flex-shrink-0 active:opacity-80 transition-opacity">
+                        <img src="https://images.unsplash.com/photo-1544078755-90177df83c44?w=400&q=80" alt="Match" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
+                        <div class="absolute bottom-2 left-2 right-2">
+                            <span class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold uppercase mb-1 inline-block">Tomorrow</span>
+                            <h4 class="text-white text-xs font-bold line-clamp-2 leading-tight">Maha Kesari Semi-Final</h4>
+                        </div>
+                    </div>
+                    <div class="min-w-[140px] snap-start relative h-24 rounded-lg overflow-hidden bg-black flex-shrink-0 active:opacity-80 transition-opacity">
+                        <img src="https://images.unsplash.com/photo-1509358117769-e0f3ee8246bc?w=400&q=80" alt="Match" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
+                        <div class="absolute bottom-2 left-2 right-2">
+                            <span class="text-[9px] bg-white text-black px-1.5 py-0.5 rounded font-bold uppercase mb-1 inline-block">12 Mar</span>
+                            <h4 class="text-white text-xs font-bold line-clamp-2 leading-tight">Kolhapur Zilla Parishad</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historical Thrillers -->
+            <div class="mb-5 pl-4">
+                <h3 class="font-bold text-sm mb-3 text-kusti-brown border-l-4 border-kusti-red pl-2">Historical Thrillers</h3>
+                <div class="flex gap-3 overflow-x-auto pr-4 pb-2 snap-x hide-scrollbar">
+                    <div class="min-w-[140px] snap-start relative h-20 rounded-lg overflow-hidden bg-black flex-shrink-0 active:opacity-80 transition-opacity border border-kusti-brown/10">
+                        <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&q=80" alt="Match" class="absolute inset-0 w-full h-full object-cover opacity-70">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-8 h-8 rounded-full bg-black/50 border border-white/50 flex items-center justify-center backdrop-blur-sm"><span class="material-icons text-white text-sm">play_arrow</span></div>
+                        </div>
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/90 to-transparent p-2">
+                            <h4 class="text-white text-[10px] font-bold line-clamp-1">Classic: Pune vs Satara 2018</h4>
+                        </div>
+                    </div>
+                    <div class="min-w-[140px] snap-start relative h-20 rounded-lg overflow-hidden bg-black flex-shrink-0 active:opacity-80 transition-opacity border border-kusti-brown/10">
+                        <img src="https://images.unsplash.com/photo-1548083833-2eb0f507ba3c?w=400&q=80" alt="Match" class="absolute inset-0 w-full h-full object-cover opacity-70">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-8 h-8 rounded-full bg-black/50 border border-white/50 flex items-center justify-center backdrop-blur-sm"><span class="material-icons text-white text-sm">play_arrow</span></div>
+                        </div>
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/90 to-transparent p-2">
+                            <h4 class="text-white text-[10px] font-bold line-clamp-1">Khasbag Maidan 2012 Final</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diet & Workout (Khurak & Mehnat) -->
+            <div class="mb-5 pl-4">
+                <h3 class="font-bold text-sm mb-3 text-kusti-brown border-l-4 border-kusti-brown pl-2">Diet & Workout (Khurak)</h3>
+                <div class="flex gap-3 overflow-x-auto pr-4 pb-2 snap-x hide-scrollbar">
+                    <div class="min-w-[120px] snap-start relative h-24 rounded-lg overflow-hidden bg-kusti-sand flex-shrink-0 p-2 border border-kusti-brown/10">
+                        <div class="w-8 h-8 rounded-md bg-kusti-orange text-white flex items-center justify-center mb-2"><span class="material-icons text-lg">restaurant</span></div>
+                        <h4 class="text-kusti-brown text-xs font-bold line-clamp-2">Pehlwan's Daily Diet Plan</h4>
+                    </div>
+                    <div class="min-w-[120px] snap-start relative h-24 rounded-lg overflow-hidden bg-kusti-sand flex-shrink-0 p-2 border border-kusti-brown/10">
+                        <div class="w-8 h-8 rounded-md bg-kusti-red text-white flex items-center justify-center mb-2"><span class="material-icons text-lg">fitness_center</span></div>
+                        <h4 class="text-kusti-brown text-xs font-bold line-clamp-2">Desi Workout with Mudgal</h4>
+                    </div>
+                    <div class="min-w-[120px] snap-start relative h-24 rounded-lg overflow-hidden bg-kusti-sand flex-shrink-0 p-2 border border-kusti-brown/10">
+                        <div class="w-8 h-8 rounded-md bg-kusti-brown text-white flex items-center justify-center mb-2"><span class="material-icons text-lg">self_improvement</span></div>
+                        <h4 class="text-kusti-brown text-xs font-bold line-clamp-2">Breathing & Flexibility</h4>
                     </div>
                 </div>
             </div>
